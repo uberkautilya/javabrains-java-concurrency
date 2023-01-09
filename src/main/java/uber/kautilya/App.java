@@ -13,14 +13,13 @@ public class App {
     List<Thread> threadList = new ArrayList<>();
     Thread statusThread = new Thread(() -> {
       try {
-        //Pause for 5 seconds - static method sleep() on current thread - Timed Waiting Lifecycle state
-        Thread.sleep(5000);
         printThreadStatus(threadList);
       } catch (InterruptedException e) {
         System.out.println("Exception: " + e.getMessage());
       }
     }, "statusThread");
     //Daemon: This thread ends when the main thread is ended
+    //Useful in monitoring, logging functions etc., which have meaning while the main application is alive
     statusThread.setDaemon(true);
     statusThread.start();
 
@@ -39,9 +38,6 @@ public class App {
         }
       };
       Thread t = new Thread(r);
-      //When the main method thread ends, daemon threads are killed
-      //Useful in monitoring, logging functions etc., which have meaning while the main application is alive
-      t.setDaemon(true);
       threadList.add(t);
       t.start();
     }
@@ -50,6 +46,8 @@ public class App {
 
   private static void printThreadStatus(List<Thread> threadList) throws InterruptedException {
     while (true) {
+      //Pause for 5 seconds - static method sleep() on current thread - Timed Waiting Lifecycle state
+      Thread.sleep(5000);
       System.out.println("\nThread Status: ");
       threadList.forEach(t -> {
         System.out.println("Name: " + t.getName());
