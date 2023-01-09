@@ -15,7 +15,7 @@ public class App {
       int n = sc.nextInt();
       if (n == 0) break;
 
-      Runnable r = new Runnable(){
+      Runnable r = new Runnable() {
         @Override
         public void run() {
           Integer number = PrimeNumberUtil.calculatePrime(n);
@@ -23,6 +23,9 @@ public class App {
         }
       };
       Thread t = new Thread(r);
+      //When the main method thread ends, daemon threads are killed
+      //Useful in monitoring, logging functions etc., which have meaning while the main application is alive
+      t.setDaemon(true);
       t.start();
     }
 
