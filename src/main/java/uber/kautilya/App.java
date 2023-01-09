@@ -10,9 +10,9 @@ public class App {
 
   public static void main(String[] args) {
 
-    List<Thread> threadList = new ArrayList<>();
+    List<Thread> calculatePrimeThreadList = new ArrayList<>();
     Thread statusThread = new Thread(() -> {
-      printThreadStatus(threadList);
+      printThreadStatus(calculatePrimeThreadList);
     }, "statusThread");
     //Daemon: This thread ends when the main thread is ended
     //Useful in monitoring, logging functions etc., which have meaning while the main application is alive
@@ -25,9 +25,7 @@ public class App {
       System.out.print("\n0 to end. Calculate nth prime number. Enter n: ");
       int n = sc.nextInt();
       if (n == 0) {
-        System.out.println("Waiting on threads to complete their execution");
-        waitForJoinThreads(threadList);
-        System.out.println(threadList.size() + " prime numbers calculated");
+        exitAsNumberIsZero(calculatePrimeThreadList, statusThread);
         break;
       }
 
@@ -40,10 +38,19 @@ public class App {
       };
       Thread t = new Thread(r);
       t.setDaemon(true);
-      threadList.add(t);
+      calculatePrimeThreadList.add(t);
       t.start();
     }
 
+  }
+
+  private static void exitAsNumberIsZero(List<Thread> calculatePrimeThreadList, Thread statusThread) {
+    //Since the statusThread is a daemon, it will end when the parent thread ends.However,
+    // the alternate is interrupt it (can be any - daemon or user thread)
+    statusThread.interrupt();
+    System.out.println("Waiting on calculatePrimeThreads to complete their execution");
+    waitForJoinThreads(calculatePrimeThreadList);
+    System.out.println(calculatePrimeThreadList.size() + " prime numbers calculated");
   }
 
   private static void printThreadStatus(List<Thread> threadList) {
@@ -58,7 +65,7 @@ public class App {
         });
       }
     } catch (InterruptedException e) {
-      System.out.println("Exception: " + e.getMessage());
+      System.out.println("Status Thread interrupted. Ending status updates");
     }
   }
 
@@ -69,7 +76,9 @@ public class App {
   private static void waitForJoinThreads(List<Thread> threadList) {
     try {
       for (Thread thread : threadList) {
-        thread.join();
+        if (thread.getState() != Thread.State.TERMINATED) {
+          thread.join();
+        }
       }
     } catch (InterruptedException e) {
       System.out.println("Exception: " + e.getMessage());
