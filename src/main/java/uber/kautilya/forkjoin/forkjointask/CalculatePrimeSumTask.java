@@ -28,7 +28,7 @@ public class CalculatePrimeSumTask extends RecursiveTask<Integer> {
     if (end - start == 1) {
       Integer primeStart = PrimeNumberUtil.calculatePrime(array[start]);
       Integer primeEnd = PrimeNumberUtil.calculatePrime(array[end]);
-      System.out.println(array[start] + ":" + primeStart);
+      System.out.println(array[start] + ": " + primeStart);
       System.out.println(array[end] + ":" + primeEnd);
       //End point criteria to do the work.
       //Here, Don't want to split task further if the task is just 2 prime number calculations
